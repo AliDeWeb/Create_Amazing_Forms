@@ -32,12 +32,12 @@ export const signUp = catchAsync(
       return next(new AppError(`کاربری با این شماره تلفن یافت شد!`, 401));
 
     const newUser = await usersModel.create({
-      name,
-      email,
-      phone,
-      password,
-      confirmPassword,
-      profileImg,
+      name: name.trim().toLowerCase(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim().toLowerCase(),
+      password: password.trim().toLowerCase(),
+      confirmPassword: confirmPassword.trim().toLowerCase(),
+      profileImg: profileImg,
     });
 
     res.status(201).json({
