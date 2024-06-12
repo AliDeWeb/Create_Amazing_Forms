@@ -1,8 +1,10 @@
 import usersModel from "../../models/Users_Model/Users_Model";
 import { Response, Request, NextFunction } from "express";
+import { promisify } from "util";
 import catchAsync from "../../utils/CatchAsync/CatchAsync";
 import AppError from "../../utils/AppError/AppError";
 import jwt from "jsonwebtoken";
+import { protectedRouteRequest } from "./Authentication_Controller.types";
 
 const tokenGenerator = (userId: string) => {
   const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
@@ -82,5 +84,41 @@ export const login = catchAsync(
       message: "خوش اومدی :)",
       token,
     });
+  },
+);
+
+export const protectedRoute = catchAsync(
+  async (req: protectedRouteRequest, res: Response, next: NextFunction) => {
+    if (
+      !req.headers.authorization?.startsWith("Bearer") ||
+      !req.headers.authorization?.split(" ")[1]
+    )
+      return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
+
+    const token = req.headers.authorization?.split(" ")[1];
+
+    const verifyAsync = promisify<string, string>(jwt.verify);
+    const decoded: unknown = await verifyAsync(
+      token,
+      process.env.JWT_SECRET as string,
+    );
+
+    if (!(decoded as boolean))
+      return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
+
+    const user = await usersModel.findById((decoded as { id: string }).id);
+
+    if (!user)
+      return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
+
+    const isTokenInvalid = user.isTokenInvalid(
+      (decoded as { iat: number }).iat,
+    );
+
+    if (isTokenInvalid)
+      return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
+
+    req.user = user;
+    next();
   },
 );

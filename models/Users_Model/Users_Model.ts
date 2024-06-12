@@ -68,6 +68,9 @@ usersSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(input, pass);
 };
+usersSchema.methods.isTokenInvalid = function (jwtIAT: number) {
+  return parseInt(String(this.updatedAt.getTime() / 1000)) > jwtIAT;
+};
 
 const usersModel = mongoose.model(`Users`, usersSchema);
 

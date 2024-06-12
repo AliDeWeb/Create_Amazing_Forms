@@ -12,6 +12,7 @@ interface userModelTypes extends Document {
     candidatePassword: string,
     userPassword: string,
   ): Promise<boolean>;
+  isTokenInvalid(jwtIAT: number): boolean;
 }
 
 export default userModelTypes;
