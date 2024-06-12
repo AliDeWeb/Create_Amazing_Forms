@@ -1,4 +1,6 @@
-class AppError extends Error {
+import AppErrorTypes from "./AppError.types";
+
+class AppError extends Error implements AppErrorTypes {
   message: string;
   statusCode: number;
   status: "fail" | "server error" | "unknown";
