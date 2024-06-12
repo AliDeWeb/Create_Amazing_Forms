@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/v1/auth", authenticationRoutes);
 app.use("*", (req, res, next: NextFunction) => {
-  next(new AppError(`Route is not found`, 404));
+  next(new AppError(`Route is not found!`, 404));
 });
 app.use(errorController);
 

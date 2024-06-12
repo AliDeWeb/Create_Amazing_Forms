@@ -1,38 +1,49 @@
 import usersModel from "../../models/Users_Model/Users_Model";
 import { Response, Request, NextFunction } from "express";
+import catchAsync from "../../utils/CatchAsync/CatchAsync";
+import AppError from "../../utils/AppError/AppError";
 
-export const signUp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const {
-    name,
-    email,
-    phone,
-    password,
-    confirmPassword,
-  }: {
-    name: string;
-    email: string;
-    phone: string;
-    password: string;
-    confirmPassword: string;
-  } = req.body;
-  const profileImg = req.file?.path;
+export const signUp = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+    }: {
+      name: string;
+      email: string;
+      phone: string;
+      password: string;
+      confirmPassword: string;
+    } = req.body;
+    const profileImg = req.file?.path;
 
-  const newUser = await usersModel.create({
-    name,
-    email,
-    phone,
-    password,
-    confirmPassword,
-    profileImg,
-  });
+    if (!name || !phone || !password || !confirmPassword) {
+      return next(
+        new AppError(`لطفا اطلاعات خود را به درستی وارد نمایید!`, 401),
+      );
+    }
 
-  res.status(201).json({
-    status: "success",
-    message: "خوش اومدی :)",
-    data: newUser,
-  });
-};
+    const userExist = await usersModel.findOne({ phone });
+
+    if (userExist)
+      return next(new AppError(`کاربری با این شماره تلفن یافت شد!`, 401));
+
+    const newUser = await usersModel.create({
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      profileImg,
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: "خوش اومدی :)",
+      data: newUser,
+    });
+  },
+);

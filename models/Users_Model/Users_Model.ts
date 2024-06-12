@@ -18,10 +18,11 @@ const usersSchema = new Schema({
   password: {
     type: String,
     required: [true, "password is required"],
-    minLength: [8, "password should have 8 char at leaset"],
+    minLength: [8, "password should have 8 char at least"],
   },
   confirmPassword: {
     type: String,
+    required: [true, "Confirm Password is required"],
   },
   profileImg: {
     type: String,
