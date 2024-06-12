@@ -122,3 +122,13 @@ export const protectedRoute = catchAsync(
     next();
   },
 );
+
+export const restrictTo = (...args: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // @ts-ignore
+    if (!args.includes(req.user.role))
+      return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
+
+    next();
+  };
+};
