@@ -7,6 +7,7 @@ interface userModelTypes extends Document {
   password: string;
   confirmPassword: string | undefined;
   profileImg?: string;
+  role: "user" | "admin";
 }
 
 export default userModelTypes;

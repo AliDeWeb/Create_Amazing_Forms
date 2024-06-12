@@ -4,6 +4,11 @@ const { Schema } = mongoose;
 import userModelTypes from "./Users_Model.types";
 
 const usersSchema = new Schema<userModelTypes>({
+  role: {
+    type: String,
+    default: "user",
+    enum: ["user", "admin"],
+  },
   name: {
     type: String,
     required: [true, "name is required"],
