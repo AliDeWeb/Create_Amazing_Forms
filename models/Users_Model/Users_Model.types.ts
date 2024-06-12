@@ -8,6 +8,10 @@ interface userModelTypes extends Document {
   confirmPassword: string | undefined;
   profileImg?: string;
   role: "user" | "admin";
+  correctPassword(
+    candidatePassword: string,
+    userPassword: string,
+  ): Promise<boolean>;
 }
 
 export default userModelTypes;

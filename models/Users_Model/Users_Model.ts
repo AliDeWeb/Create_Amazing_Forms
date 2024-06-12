@@ -22,6 +22,13 @@ const usersSchema = new Schema<userModelTypes>(
       type: String,
       unique: true,
       required: [true, "phone number is required"],
+      validate: {
+        validator: function (el: string) {
+          const phoneRegex = /^09\d{9}$/;
+          return el.match(phoneRegex);
+        },
+        message: "رمز عبور ها یکسان نیستند!",
+      },
     },
     password: {
       type: String,
@@ -54,6 +61,13 @@ usersSchema.pre(`save`, async function (next) {
 
   next();
 });
+
+usersSchema.methods.correctPassword = async function (
+  input: string,
+  pass: string,
+) {
+  return await bcrypt.compare(input, pass);
+};
 
 const usersModel = mongoose.model(`Users`, usersSchema);
 

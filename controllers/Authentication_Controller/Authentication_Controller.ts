@@ -4,6 +4,14 @@ import catchAsync from "../../utils/CatchAsync/CatchAsync";
 import AppError from "../../utils/AppError/AppError";
 import jwt from "jsonwebtoken";
 
+const tokenGenerator = (userId: string) => {
+  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+    expiresIn: process.env.JWT_EXPIRES_IN as string,
+  });
+
+  return token;
+};
+
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -41,18 +49,37 @@ export const signUp = catchAsync(
       profileImg: profileImg,
     });
 
-    const token = jwt.sign(
-      { id: newUser._id },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN as string,
-      },
-    );
+    const token = tokenGenerator(newUser._id as string);
 
     res.status(201).json({
       status: "success",
       message: "خوش اومدی :)",
       data: newUser,
+      token,
+    });
+  },
+);
+
+export const login = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { phone, password }: { phone: string; password: string } = req.body;
+
+    if (!phone || !password) {
+      return next(
+        new AppError(`شماره تلفن و رمز عبور خود را وارد نمایید!`, 401),
+      );
+    }
+
+    const user = await usersModel.findOne({ phone }).select(`+password`);
+
+    if (!user || !(await user.correctPassword(password, user.password)))
+      return next(new AppError(`شماره تلفن یا رمز عبور نادرست است!`, 401));
+
+    const token = tokenGenerator(user._id as string);
+
+    res.status(201).json({
+      status: "success",
+      message: "خوش اومدی :)",
       token,
     });
   },
