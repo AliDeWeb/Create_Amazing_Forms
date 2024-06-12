@@ -2,6 +2,7 @@ import usersModel from "../../models/Users_Model/Users_Model";
 import { Response, Request, NextFunction } from "express";
 import catchAsync from "../../utils/CatchAsync/CatchAsync";
 import AppError from "../../utils/AppError/AppError";
+import jwt from "jsonwebtoken";
 
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -40,10 +41,19 @@ export const signUp = catchAsync(
       profileImg: profileImg,
     });
 
+    const token = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN as string,
+      },
+    );
+
     res.status(201).json({
       status: "success",
       message: "خوش اومدی :)",
       data: newUser,
+      token,
     });
   },
 );
