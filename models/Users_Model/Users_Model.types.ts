@@ -6,6 +6,8 @@ interface userModelTypes extends Document {
   phone: string;
   password: string;
   confirmPassword: string | undefined;
+  passwordResetToken?: string;
+  passwordResetTokenExpiresIn?: Date;
   profileImg?: string;
   role: "user" | "admin";
   correctPassword(
@@ -13,6 +15,7 @@ interface userModelTypes extends Document {
     userPassword: string,
   ): Promise<boolean>;
   isTokenInvalid(jwtIAT: number): boolean;
+  generatePasswordResetToken(): string;
 }
 
 export default userModelTypes;

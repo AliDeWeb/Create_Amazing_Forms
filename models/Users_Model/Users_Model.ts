@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 const { Schema } = mongoose;
@@ -46,6 +47,8 @@ const usersSchema = new Schema<userModelTypes>(
         message: "رمز عبور ها یکسان نیستند!",
       },
     },
+    passwordResetToken: String,
+    passwordResetTokenExpiresIn: Date,
     profileImg: {
       type: String,
     },
@@ -56,6 +59,8 @@ const usersSchema = new Schema<userModelTypes>(
 );
 
 usersSchema.pre(`save`, async function (next) {
+  if (!this.isModified(`password`)) return next();
+
   this.password = await bcrypt.hash(this.password, 12);
   this.confirmPassword = undefined;
 
@@ -73,6 +78,18 @@ usersSchema.methods.correctPassword = async function (
 };
 usersSchema.methods.isTokenInvalid = function (jwtIAT: number) {
   return parseInt(String(this.updatedAt.getTime() / 1000)) > jwtIAT;
+};
+usersSchema.methods.generatePasswordResetToken = function () {
+  const passwordResetToken = crypto.randomBytes(32).toString(`hex`);
+
+  this.passwordResetToken = crypto
+    .createHash(`sha256`)
+    .update(passwordResetToken)
+    .digest("hex");
+
+  this.passwordResetTokenExpiresIn = Date.now() + 3 * 60 * 1000;
+
+  return passwordResetToken;
 };
 
 const usersModel = mongoose.model(`Users`, usersSchema);

@@ -5,6 +5,7 @@ import catchAsync from "../../utils/CatchAsync/CatchAsync";
 import AppError from "../../utils/AppError/AppError";
 import jwt from "jsonwebtoken";
 import { protectedRouteRequest } from "./Authentication_Controller.types";
+import sendEmail from "../../utils/MailTo/MailTo";
 
 const tokenGenerator = (userId: string) => {
   const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
@@ -145,6 +146,42 @@ export const getMe = catchAsync(
     res.status(201).json({
       status: "success",
       data: userInfos,
+    });
+  },
+);
+
+export const forgetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    const user = await usersModel.findOne({ email });
+
+    if (!user) return next(new AppError(`ایمیل را به درستی وارد نمایید!`, 400));
+
+    const token = user.generatePasswordResetToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${req.protocol}://${req.get(`host`)}/v1/auth/reset-password/${token}`;
+    const message = `بر روی لینک کلیک کنید.\n${resetUrl}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "بازنشانی رمز عبور",
+        message,
+      });
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpiresIn = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(new AppError(`لطفا دوباره تلاش کنید!`, 400));
+    }
+
+    res.status(201).json({
+      status: `success`,
+      message: "ایمیل خود را چک کنید.",
     });
   },
 );
