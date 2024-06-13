@@ -5,6 +5,8 @@ import path from "path";
 import {
   signUp,
   login,
+  getMe,
+  protectedRoute,
 } from "../../controllers/Authentication_Controller/Authentication_Controller";
 
 const storage = multer.diskStorage({
@@ -79,6 +81,8 @@ router.route("/login").post(
   }),
   login,
 );
+
+router.route("/getme").get(protectedRoute, getMe);
 
 router.use(errors());
 

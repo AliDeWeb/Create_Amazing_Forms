@@ -132,3 +132,19 @@ export const restrictTo = (...args: string[]) => {
     next();
   };
 };
+
+export const getMe = catchAsync(
+  async (req: protectedRouteRequest, res: Response, next: NextFunction) => {
+    const userInfos = {
+      name: req.user.name,
+      phone: req.user.phone,
+      email: req.user.email || undefined,
+      profileImg: req.user.profileImg || undefined,
+    };
+
+    res.status(201).json({
+      status: "success",
+      data: userInfos,
+    });
+  },
+);
