@@ -49,6 +49,10 @@ const usersSchema = new Schema<userModelTypes>(
     },
     passwordResetToken: String,
     passwordResetTokenExpiresIn: Date,
+    passwordUpdateAt: {
+      type: Number,
+      default: Date.now(),
+    },
     profileImg: {
       type: String,
     },
@@ -70,6 +74,14 @@ usersSchema.pre(`save`, async function (next) {
   next();
 });
 
+usersSchema.pre(`save`, function (next) {
+  if (!this.isModified(`password`) || this.isNew) return next();
+
+  this.passwordUpdateAt = Date.now() - 1000;
+
+  next();
+});
+
 usersSchema.methods.correctPassword = async function (
   input: string,
   pass: string,
@@ -77,7 +89,7 @@ usersSchema.methods.correctPassword = async function (
   return await bcrypt.compare(input, pass);
 };
 usersSchema.methods.isTokenInvalid = function (jwtIAT: number) {
-  return parseInt(String(this.updatedAt.getTime() / 1000)) > jwtIAT;
+  return parseInt(String(this.passwordUpdateAt.getTime() / 1000)) > jwtIAT;
 };
 usersSchema.methods.generatePasswordResetToken = function () {
   const passwordResetToken = crypto.randomBytes(32).toString(`hex`);
@@ -87,9 +99,13 @@ usersSchema.methods.generatePasswordResetToken = function () {
     .update(passwordResetToken)
     .digest("hex");
 
-  this.passwordResetTokenExpiresIn = Date.now() + 3 * 60 * 1000;
+  this.passwordResetTokenExpiresIn =
+    Date.now() + Number(process.env.EMAIL_EXPIRES_IN) * 60 * 1000;
 
   return passwordResetToken;
+};
+usersSchema.methods.isResetTokenValid = function () {
+  return this.passwordResetTokenExpiresIn > Date.now();
 };
 
 const usersModel = mongoose.model(`Users`, usersSchema);

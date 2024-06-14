@@ -6,6 +6,7 @@ import AppError from "../../utils/AppError/AppError";
 import jwt from "jsonwebtoken";
 import { protectedRouteRequest } from "./Authentication_Controller.types";
 import sendEmail from "../../utils/MailTo/MailTo";
+import crypto from "crypto";
 
 const tokenGenerator = (userId: string) => {
   const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
@@ -182,6 +183,38 @@ export const forgetPassword = catchAsync(
     res.status(201).json({
       status: `success`,
       message: "ایمیل خود را چک کنید.",
+    });
+  },
+);
+
+export const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { token } = req.params;
+    const hashedToken = crypto.createHash(`sha256`).update(token).digest("hex");
+    const user = await usersModel.findOne({ passwordResetToken: hashedToken });
+    if (!user)
+      return next(new AppError(`لینک معتبر نمیباشد، دوباره تلاش کنید!`, 403));
+
+    const isTokenValid = user.isResetTokenValid();
+    if (!isTokenValid)
+      return next(
+        new AppError(
+          `زمان تغییر رمز عبور به پایان رسیده است، دوباره تلاش کنید!`,
+          403,
+        ),
+      );
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiresIn = undefined;
+    user.save();
+
+    const generatedToken = tokenGenerator(user._id as string);
+
+    res.status(201).json({
+      status: `success`,
+      message: "رمز عبور با موفقیت بروز شد.",
+      generatedToken,
     });
   },
 );

@@ -8,6 +8,7 @@ import {
   getMe,
   protectedRoute,
   forgetPassword,
+  resetPassword,
 } from "../../controllers/Authentication_Controller/Authentication_Controller";
 
 const storage = multer.diskStorage({
@@ -86,6 +87,7 @@ router.route("/login").post(
 router.route("/getme").get(protectedRoute, getMe);
 
 router.route("/forget-password").post(forgetPassword);
+router.route("/reset-password/:token").patch(resetPassword);
 
 router.use(errors());
 
