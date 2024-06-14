@@ -52,9 +52,16 @@ const usersSchema = new Schema<userModelTypes>(
     passwordUpdateAt: {
       type: Number,
       default: Date.now(),
+      select: false,
     },
     profileImg: {
       type: String,
+    },
+    active: {
+      type: Boolean,
+      required: true,
+      default: true,
+      select: false,
     },
   },
   {
@@ -62,18 +69,20 @@ const usersSchema = new Schema<userModelTypes>(
   },
 );
 
+usersSchema.pre(`save`, function (next) {
+  if (this.profileImg)
+    this.profileImg = this.profileImg.replace(/\buploads\b/g, "");
+
+  next();
+});
 usersSchema.pre(`save`, async function (next) {
   if (!this.isModified(`password`)) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
   this.confirmPassword = undefined;
 
-  if (this.profileImg)
-    this.profileImg = this.profileImg.replace(/\buploads\b/g, "");
-
   next();
 });
-
 usersSchema.pre(`save`, function (next) {
   if (!this.isModified(`password`) || this.isNew) return next();
 

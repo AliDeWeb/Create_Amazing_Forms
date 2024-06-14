@@ -11,6 +11,7 @@ interface userModelTypes extends Document {
   passwordUpdateAt?: number;
   profileImg?: string;
   role: "user" | "admin";
+  active: boolean;
   correctPassword(
     candidatePassword: string,
     userPassword: string,

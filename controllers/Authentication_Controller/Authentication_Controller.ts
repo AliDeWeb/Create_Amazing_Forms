@@ -55,6 +55,13 @@ export const signUp = catchAsync(
 
     const token = tokenGenerator(newUser._id as string);
 
+    // @ts-ignore
+    newUser.password = undefined;
+    // @ts-ignore
+    newUser.passwordUpdateAt = undefined;
+    // @ts-ignore
+    newUser.active = undefined;
+
     res.status(201).json({
       status: "success",
       message: "خوش اومدی :)",
