@@ -244,3 +244,14 @@ export const updateMe = catchAsync(
     });
   },
 );
+
+export const deactivateMe = catchAsync(
+  async (req: protectedRouteRequest, res: Response, next: NextFunction) => {
+    await usersModel.findByIdAndUpdate(req.user._id, { active: false });
+
+    res.status(201).json({
+      status: "success",
+      message: "با موفقیت حذف شدید.",
+    });
+  },
+);
