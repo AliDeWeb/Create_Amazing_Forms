@@ -4,6 +4,9 @@ import AppError from "./utils/AppError/AppError";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+// @ts-ignore
+import xss from "xss-clean";
 
 // <-- Logics -->
 const app = express();
@@ -29,6 +32,9 @@ app.use(express.json({ limit: `10kb` }));
 app.use(express.urlencoded({ extended: true }));
 // <-- Serving Static Files -->
 app.use(express.static("uploads"));
+// <-- Data Sanitizing -->
+app.use(mongoSanitize());
+app.use(xss());
 // <-- APIs -->
 app.use("/api/v1/auth", authenticationRoutes);
 app.use("/api/v1/users", usersRoutes);

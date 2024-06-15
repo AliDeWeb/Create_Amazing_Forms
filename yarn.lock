@@ -99,6 +99,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/express-mongo-sanitize@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/express-mongo-sanitize/-/express-mongo-sanitize-2.1.0.tgz#e0ac0db7aaf35d27375dcb4b5684c786322f6cf5"
+  integrity sha512-m0JsxN7Jwlo/S4TjaHewmRs392QeQ9ATconFNxxV+y349/e7tsQA/LiCThjSoETV+xiM5fwVvwWV8474OKJ+ig==
+  dependencies:
+    express-mongo-sanitize "*"
+
 "@types/express-rate-limit@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@types/express-rate-limit/-/express-rate-limit-6.0.0.tgz#11a314477895a8a888958f27650ed0d1ddad01b0"
@@ -590,6 +597,11 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
+
+express-mongo-sanitize@*, express-mongo-sanitize@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/express-mongo-sanitize/-/express-mongo-sanitize-2.2.0.tgz#c8c2d45e137f213950f70bf586704e0db5cfe356"
+  integrity sha512-PZBs5nwhD6ek9ZuP+W2xmpvcrHwXZxD5GdieX2dsjPbAbH4azOkrHbycBud2QRU+YQF1CT+pki/lZGedHgo/dQ==
 
 express-rate-limit@*, express-rate-limit@^7.3.1:
   version "7.3.1"
@@ -1718,6 +1730,18 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+xss-clean@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/xss-clean/-/xss-clean-0.1.4.tgz#592b7f59cc52d39d4b8c397787243817639fb73d"
+  integrity sha512-4hArTFHYxrifK9VXOu/zFvwjTXVjKByPi6woUHb1IqxlX0Z4xtFBRjOhTKuYV/uE1VswbYsIh5vUEYp7MmoISQ==
+  dependencies:
+    xss-filters "1.2.7"
+
+xss-filters@1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/xss-filters/-/xss-filters-1.2.7.tgz#59fa1de201f36f2f3470dcac5f58ccc2830b0a9a"
+  integrity sha512-KzcmYT/f+YzcYrYRqw6mXxd25BEZCxBQnf+uXTopQDIhrmiaLwO+f+yLsIvvNlPhYvgff8g3igqrBxYh9k8NbQ==
 
 xtend@^4.0.0:
   version "4.0.2"
