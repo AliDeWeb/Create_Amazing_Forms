@@ -8,12 +8,40 @@ import { protectedRouteRequest } from "./Authentication_Controller.types";
 import sendEmail from "../../utils/MailTo/MailTo";
 import crypto from "crypto";
 
-const tokenGenerator = (userId: string) => {
-  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+const createAndSendToken = (
+  user: any,
+  res: Response,
+  data: any,
+  statusCode: number,
+) => {
+  const cookiesOptions: {
+    expires: Date;
+    httpOnly: boolean;
+    secure?: boolean;
+  } = {
+    expires: new Date(
+      Date.now() +
+        Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === `production`) cookiesOptions.secure = true;
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
     expiresIn: process.env.JWT_EXPIRES_IN as string,
   });
 
-  return token;
+  user.password = undefined;
+  user.passwordUpdateAt = undefined;
+  user.active = undefined;
+
+  res.cookie(`jwt`, token, cookiesOptions);
+  res.status(statusCode).json({
+    status: "success",
+    message: "با موفقیت انجام شد.",
+    data,
+    token,
+  });
 };
 
 export const signUp = catchAsync(
@@ -53,21 +81,7 @@ export const signUp = catchAsync(
       profileImg: profileImg,
     });
 
-    const token = tokenGenerator(newUser._id as string);
-
-    // @ts-ignore
-    newUser.password = undefined;
-    // @ts-ignore
-    newUser.passwordUpdateAt = undefined;
-    // @ts-ignore
-    newUser.active = undefined;
-
-    res.status(201).json({
-      status: "success",
-      message: "خوش اومدی :)",
-      data: newUser,
-      token,
-    });
+    createAndSendToken(newUser, res, newUser, 201);
   },
 );
 
@@ -86,13 +100,7 @@ export const login = catchAsync(
     if (!user || !(await user.correctPassword(password, user.password)))
       return next(new AppError(`شماره تلفن یا رمز عبور نادرست است!`, 401));
 
-    const token = tokenGenerator(user._id as string);
-
-    res.status(201).json({
-      status: "success",
-      message: "خوش اومدی :)",
-      token,
-    });
+    createAndSendToken(user, res, user, 201);
   },
 );
 
@@ -216,13 +224,7 @@ export const resetPassword = catchAsync(
     user.passwordResetTokenExpiresIn = undefined;
     user.save();
 
-    const generatedToken = tokenGenerator(user._id as string);
-
-    res.status(201).json({
-      status: `success`,
-      message: "رمز عبور با موفقیت بروز شد.",
-      generatedToken,
-    });
+    createAndSendToken(user, res, user, 201);
   },
 );
 
