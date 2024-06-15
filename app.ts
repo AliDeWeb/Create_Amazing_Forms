@@ -9,6 +9,7 @@ const app = express();
 
 // Routes
 import authenticationRoutes from "./routers/Authentication_Routes/Authentication_Routes";
+import usersRoutes from "./routers/Users_Routes/Users_Routes";
 
 // Middlewares
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.static("uploads"));
 app.use(express.urlencoded({ extended: true }));
 app.use("/v1/auth", authenticationRoutes);
+app.use("/v1/users", usersRoutes);
 // <-- Test -->
 app.use("/v1/test", testRoutes);
 app.use("*", (req, res, next: NextFunction) => {

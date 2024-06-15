@@ -90,6 +90,11 @@ usersSchema.pre(`save`, function (next) {
 
   next();
 });
+usersSchema.pre(/^find/, function (next) {
+  // @ts-ignore
+  this.where({ active: true });
+  next();
+});
 
 usersSchema.methods.correctPassword = async function (
   input: string,
