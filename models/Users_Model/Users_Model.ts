@@ -98,7 +98,7 @@ usersSchema.methods.correctPassword = async function (
   return await bcrypt.compare(input, pass);
 };
 usersSchema.methods.isTokenInvalid = function (jwtIAT: number) {
-  return parseInt(String(this.passwordUpdateAt.getTime() / 1000)) > jwtIAT;
+  return parseInt(String(this.passwordUpdateAt / 1000)) > jwtIAT;
 };
 usersSchema.methods.generatePasswordResetToken = function () {
   const passwordResetToken = crypto.randomBytes(32).toString(`hex`);

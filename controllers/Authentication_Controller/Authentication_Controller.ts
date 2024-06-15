@@ -225,3 +225,22 @@ export const resetPassword = catchAsync(
     });
   },
 );
+
+export const updateMe = catchAsync(
+  async (req: protectedRouteRequest, res: Response, next: NextFunction) => {
+    const { email, phone, name } = req.body;
+    const newInfos = await usersModel.findByIdAndUpdate(
+      req.user._id,
+      { email, phone, name },
+      { new: true },
+    );
+
+    res.status(201).json({
+      status: `success`,
+      message: "با موفقیت انجام شد.",
+      date: {
+        newInfos,
+      },
+    });
+  },
+);
