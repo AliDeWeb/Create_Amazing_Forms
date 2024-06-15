@@ -3,9 +3,9 @@ import errorController from "./controllers/Error_Controller/Error_Controller";
 import AppError from "./utils/AppError/AppError";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-// Tests
-import testRoutes from "./routers/Test_Routes/Test_Routes";
+import helmet from "helmet";
 
+// <-- Logics -->
 const app = express();
 const limiter = rateLimit({
   max: 100,
@@ -20,17 +20,23 @@ import usersRoutes from "./routers/Users_Routes/Users_Routes";
 
 // Middlewares
 app.use(cors());
+// <-- Security -->
+app.use(helmet());
+// <-- Limitation -->
 app.use("/api", limiter);
-app.use(express.json());
-app.use(express.static("uploads"));
+// <-- Body Parsers -->
+app.use(express.json({ limit: `10kb` }));
 app.use(express.urlencoded({ extended: true }));
+// <-- Serving Static Files -->
+app.use(express.static("uploads"));
+// <-- APIs -->
 app.use("/api/v1/auth", authenticationRoutes);
 app.use("/api/v1/users", usersRoutes);
-// <-- Test -->
-app.use("/api/v1/test", testRoutes);
+// <-- 404 Route -->
 app.use("*", (req, res, next: NextFunction) => {
   next(new AppError(`Route is not found!`, 404));
 });
+// <-- Error Handler -->
 app.use(errorController);
 
 export default app;
