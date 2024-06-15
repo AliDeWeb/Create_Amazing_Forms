@@ -5,12 +5,12 @@ import ApiFeatures from "../../utils/ApiFeatures/ApiFeatures";
 
 export const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const query = new ApiFeatures(usersModel.find(), req.query)
+    const features = new ApiFeatures(usersModel.find(), req.query)
       .filter()
       .sort()
       .fields()
       .paginate();
-    const users = await query.query;
+    const users = await features.query;
 
     res.status(201).json({
       status: "success",

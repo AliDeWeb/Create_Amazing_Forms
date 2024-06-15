@@ -8,21 +8,21 @@ class ApiFeatures {
   }
 
   filter() {
-    let queryCln = { ...this.query };
+    let queryCln = { ...this.queryObj };
     const fields = ["sort", "limit", "page", "fields"];
 
     fields.forEach((el) => {
       delete queryCln[el];
     });
 
-    queryCln = JSON.parse(
-      JSON.stringify(
-        queryCln.replace(
+    if (Object.keys(queryCln).length) {
+      queryCln = JSON.parse(
+        JSON.stringify(queryCln).replace(
           /\b(gt|gte|lt|lte)\b/gi,
           (match: string) => `$${match}`,
         ),
-      ),
-    );
+      );
+    }
 
     this.query = this.query.find(queryCln);
 
