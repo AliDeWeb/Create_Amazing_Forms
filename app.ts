@@ -5,6 +5,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
+import hpp from "hpp";
 // @ts-ignore
 import xss from "xss-clean";
 
@@ -35,6 +36,8 @@ app.use(express.static("uploads"));
 // <-- Data Sanitizing -->
 app.use(mongoSanitize());
 app.use(xss());
+// <-- Preventing Params Pollution -->
+app.use(hpp());
 // <-- APIs -->
 app.use("/api/v1/auth", authenticationRoutes);
 app.use("/api/v1/users", usersRoutes);
