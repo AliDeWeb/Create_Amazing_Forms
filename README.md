@@ -8,7 +8,7 @@
 2. Download and install mongodb
 3. Clone the project using this command:
     ``` bash
-   git clone https://github.com/AliDeWeb/form.git
+   git clone https://github.com/AliDeWeb/Create_Amazing_Froms.git
    ```
 4. Install Dependencies using this command:
    ``` bash
