@@ -2,6 +2,7 @@ import express from "express";
 import {
   addNewForm,
   getAllForms,
+  getFormQuestionResponse,
 } from "../../controllers/Forms_Controller/Forms_Controller";
 import {
   protectedRoute,
@@ -17,5 +18,6 @@ router.route("/").get(protectedRoute, restrictTo(`admin`), getAllForms);
 
 // <-- Responses APIs -->
 router.route("/response").post(protectedRoute, addNewResponse);
+router.route("/response/:id").get(protectedRoute, getFormQuestionResponse);
 
 export default router;
