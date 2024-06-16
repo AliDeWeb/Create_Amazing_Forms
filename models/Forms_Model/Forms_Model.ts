@@ -58,6 +58,7 @@ formsSchema.pre(/^find/, function (next) {
   // @ts-ignore
   this.populate({
     path: "user",
+    select: "-__v -createdAt -updatedAt",
   });
 
   next();
