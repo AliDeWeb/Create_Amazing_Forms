@@ -156,13 +156,30 @@ export const restrictTo = (...args: string[]) => {
 
 export const getMe = catchAsync(
   async (req: protectedRouteRequest, res: Response, next: NextFunction) => {
-    const userInfos = {
-      name: req.user.name,
-      phone: req.user.phone,
-      email: req.user.email || undefined,
-      profileImg: req.user.profileImg || undefined,
-      forms: req.user.forms || undefined,
-    };
+    const userInfos = await usersModel.aggregate([
+      { $match: { _id: req.user._id } },
+      {
+        $lookup: {
+          from: "forms",
+          localField: "_id",
+          foreignField: "user",
+          as: "forms",
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          phone: 1,
+          email: 1,
+          profileImg: 1,
+          forms: {
+            _id: 1,
+            data: 1,
+            createdAt: 1,
+          },
+        },
+      },
+    ]);
 
     res.status(201).json({
       status: "success",
