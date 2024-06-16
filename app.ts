@@ -21,6 +21,7 @@ const limiter = rateLimit({
 // Routes
 import authenticationRoutes from "./routers/Authentication_Routes/Authentication_Routes";
 import usersRoutes from "./routers/Users_Routes/Users_Routes";
+import formRoutes from "./routers/Form_Routes/Form_Routes";
 
 // Middlewares
 app.use(cors());
@@ -41,6 +42,7 @@ app.use(hpp());
 // <-- APIs -->
 app.use("/api/v1/auth", authenticationRoutes);
 app.use("/api/v1/users", usersRoutes);
+app.use("/api/v1/forms", formRoutes);
 // <-- 404 Route -->
 app.use("*", (req, res, next: NextFunction) => {
   next(new AppError(`Route is not found!`, 404));
