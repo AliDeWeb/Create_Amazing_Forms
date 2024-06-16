@@ -66,8 +66,16 @@ const usersSchema = new Schema<userModelTypes>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
+
+usersSchema.virtual(`forms`, {
+  ref: "Forms",
+  foreignField: "user",
+  localField: "_id",
+});
 
 usersSchema.pre(`save`, function (next) {
   if (this.profileImg)

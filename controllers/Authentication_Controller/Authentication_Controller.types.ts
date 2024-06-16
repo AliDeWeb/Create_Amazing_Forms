@@ -10,6 +10,7 @@ interface protectedRouteRequest extends Request {
     phone: string;
     createdAt?: Date;
     updatedAt?: Date;
+    forms: Object;
   };
 }
 

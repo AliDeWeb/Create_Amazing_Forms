@@ -123,7 +123,9 @@ export const protectedRoute = catchAsync(
     if (!(decoded as boolean))
       return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
 
-    const user = await usersModel.findById((decoded as { id: string }).id);
+    const user = await usersModel
+      .findById((decoded as { id: string }).id)
+      .populate(`forms`);
 
     if (!user)
       return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
@@ -135,7 +137,9 @@ export const protectedRoute = catchAsync(
     if (isTokenInvalid)
       return next(new AppError("شما مجاز به انجام اینکار نیستید!", 403));
 
+    // @ts-ignore
     req.user = user;
+
     next();
   },
 );
@@ -157,6 +161,7 @@ export const getMe = catchAsync(
       phone: req.user.phone,
       email: req.user.email || undefined,
       profileImg: req.user.profileImg || undefined,
+      forms: req.user.forms || undefined,
     };
 
     res.status(201).json({
