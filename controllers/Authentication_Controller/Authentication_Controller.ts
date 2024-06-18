@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { protectedRouteRequest } from "./Authentication_Controller.types";
 import sendEmail from "../../utils/MailTo/MailTo";
 import crypto from "crypto";
+import { usersRoles } from "../../utils/GeneralAppTypes/GeneralApp.types";
 
 const createAndSendToken = (
   user: any,
@@ -144,7 +145,7 @@ export const protectedRoute = catchAsync(
   },
 );
 
-export const restrictTo = (...args: string[]) => {
+export const restrictTo = (...args: usersRoles[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // @ts-ignore
     if (!args.includes(req.user.role))
